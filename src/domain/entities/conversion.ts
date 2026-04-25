@@ -2,6 +2,7 @@ import {Moneda} from "./moneda"
 
 
 export class Conversion {
+    id: number;
     monedaOrigen: Moneda;
     monedaDestino: Moneda;
     montoOriginal: number;
@@ -9,7 +10,8 @@ export class Conversion {
     tasa: number;
     fecha: Date;
 
-    constructor (monedaOrigen: Moneda, monedaDestino: Moneda, montoOriginal: number, montoConvertido: number, tasa: number, fecha: Date) {
+    constructor (id: number, monedaOrigen: Moneda, monedaDestino: Moneda, montoOriginal: number, montoConvertido: number, tasa: number, fecha: Date) {
+        this.id = id
         this.monedaOrigen = monedaOrigen;
         this.monedaDestino = monedaDestino;
         this.montoOriginal = montoOriginal;
@@ -36,6 +38,7 @@ export class Conversion {
 
     invertir (): Conversion{
         return new Conversion (
+            this.id,
             this.monedaDestino,
             this.monedaOrigen,
             this.montoConvertido,
