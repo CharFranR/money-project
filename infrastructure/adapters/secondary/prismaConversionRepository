@@ -1,0 +1,141 @@
+// Dependencias
+
+import { PrismaClient } from "@prisma/client/extension";
+import { Conversion } from "../../../src/domain/entities/conversion";
+import { Moneda } from "../../../src/domain/entities/moneda";
+import { ConversionRepository } from "../../../src/domain/ports/secondary/conversionRepository";
+
+
+// Adaptador
+
+export class PrismaConversionRepository implements ConversionRepository {
+    private prisma: PrismaClient
+
+    constructor(){
+        this.prisma = new PrismaClient();
+    }
+
+    async guardar(conversion: Conversion): Promise<void> {
+
+        const monedaOrigen = await this.prisma.Moneda.findUnique({
+            where:{
+                nombre: conversion.monedaOrigen.nombre,
+                codigo: conversion.monedaOrigen.codigo
+            }
+        })
+
+        const monedaDestino = await this.prisma.Moneda.findUnique({
+            where:{
+                nombre: conversion.monedaDestino.nombre,
+                codigo: conversion.monedaDestino.codigo
+            }
+        })
+
+        await this.prisma.Conversion.create({
+            data: {
+                id:conversion.id,
+                montoOriginal: conversion.montoOriginal,
+                montoConvertido: conversion.montoConvertido,
+                tasa: conversion.tasa,
+                fecha: conversion.fecha,
+                monedaOrigenId: monedaOrigen.id,
+                monedaDestinoId: monedaDestino.id
+            }
+        })
+    }
+
+    async obtenerTodas(): Promise<Conversion[]> {
+        const response:Conversion[] = await this.prisma.Conversion.findMany({
+            include: {
+                monedaOrigen: true,
+                monedaDestino: true
+            }
+        });
+        return this.toDomainList(response)
+    }
+
+    async buscarPorId(id:string): Promise<Conversion | null> {
+        const response:Conversion | null = await this.prisma.Conversion.findUnique({
+            where:{
+                id:id
+            },
+            include: {
+                monedaOrigen: true,
+                monedaDestino: true
+            }
+        });
+        return this.toDomain(response)
+    }
+
+    async buscarPorFecha(date:Date):Promise<Conversion[]> {
+        const response:Conversion[] = await this.prisma.Conversion.findMany({
+            where:{
+                fecha: date
+            },
+            include:{
+                monedaOrigen: true,
+                monedaDestino: true
+            }
+        })
+        return this.toDomainList(response)
+    }
+
+    async buscarPorMonedaOrigen(codigo:string):Promise<Conversion[]> {
+        const response:Conversion[] = await this.prisma.Conversion.findMany({
+            where:{
+                monedaOrigen:{
+                    codigo:codigo
+                }
+            },
+            include: {
+                monedaOrigen: true,
+                monedaDestino: true
+            }
+        })
+        return this.toDomainList(response)
+    }
+
+    async buscarPorMonedaDestino(codigo:string):Promise<Conversion[]> {
+        const response:Conversion[] = await this.prisma.Conversion.findMany({
+            where:{
+                monedaDestino:{
+                    codigo:codigo
+                }
+            },
+            include: {
+                monedaOrigen: true,
+                monedaDestino: true
+            }
+        })
+        return this.toDomainList(response)
+    }
+
+    async eliminar(id:string):Promise<void> {
+        await this.prisma.Conversion.delete({
+            where: {
+                id: id
+            }
+        })
+    }
+
+    async eliminarTodas():Promise<void> {
+        await this.prisma.Conversion.deleteMany({})
+    }
+
+
+    private toDomain(prismaData: any): Conversion {
+        return new Conversion(
+            prismaData.id,
+            new Moneda(prismaData.monedaOrigen.id, prismaData.monedaOrigen.nombre, prismaData.monedaOrigen.codigo),
+            new Moneda(prismaData.monedaDestino.id, prismaData.monedaDestino.nombre, prismaData.monedaDestino.codigo),
+            prismaData.montoOriginal,
+            prismaData.montoConvertido,
+            prismaData.tasa,
+            prismaData.fecha
+        );
+    }
+
+    private toDomainList(prismaList: any[]): Conversion[] {
+        return prismaList.map(item => this.toDomain(item));
+    }
+}
