@@ -11,3 +11,29 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+
+model Moneda {
+  id Int @id @default(autoincrement())
+  nombre String
+  codigo String @unique
+
+  conversionesOrigen  Conversion[] @relation("monedaOrigen")
+  conversionesDestino Conversion[] @relation("monedaDestino")
+}
+
+model Conversion {
+  id String @id
+  montoOriginal Float
+  montoConvertido Float
+  tasa Float
+  fecha DateTime @default(now())
+
+  // Foreign Keys
+  monedaOrigenId Int
+  monedaDestinoId  Int
+
+  // Relations
+  monedaOrigen Moneda @relation("monedaOrigen", fields: [monedaOrigenId], references: [id])
+  monedaDestino Moneda @relation("monedaDestino", fields: [monedaDestinoId], references: [id])
+}
