@@ -20,7 +20,7 @@ export class Conversion {
         this.fecha = fecha;
     }
 
-    esValida(): boolean{
+    esValida(): boolean{ 
         return this.monedaOrigen instanceof Moneda && this.monedaDestino instanceof Moneda && typeof this.montoOriginal === 'number' && !Number.isNaN(this.montoOriginal) && Number.isFinite(this.montoOriginal) && typeof this.montoConvertido === 'number' && !Number.isNaN(this.montoConvertido) && Number.isFinite(this.montoConvertido) && typeof this.tasa === 'number' && !Number.isNaN(this.tasa) && Number.isFinite(this.tasa) && this.fecha instanceof Date && !isNaN(this.fecha.getTime())
     }
 
