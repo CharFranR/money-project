@@ -1,4 +1,5 @@
 import { Conversion } from "../../src/domain/entities/conversion"
+import { DeleteAllPort } from "../../src/domain/ports/primary/deleteAllPort"
 
 
 // Dependencias
@@ -10,13 +11,13 @@ export interface ConversionRepository {
 
 // Caso de uso
 
-export class DeleteAllConversion {
+export class DeleteAllConversion implements DeleteAllPort {
 
     constructor(
         private conversionRepository: ConversionRepository
     ){}
 
-    async ejecutar (): Promise<void> {
+    async deleteAll (): Promise<void> {
         await this.conversionRepository.eliminarTodas()
     }
 }

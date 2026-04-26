@@ -1,4 +1,5 @@
 import { Conversion } from "../../src/domain/entities/conversion"
+import { ListPort } from "../../src/domain/ports/primary/listPort";
 
 // Dependencias
 
@@ -8,13 +9,13 @@ export interface ConversionRepository {
 
 // Caso de uso
 
-export class ListConversion {
+export class ListConversion implements ListPort {
 
     constructor (
         private conversionRepository: ConversionRepository
     ) {}
 
-    async ejecutar (): Promise<Conversion[]> {
+    async list (): Promise<Conversion[]> {
         const all_conversions:Conversion[] = await this.conversionRepository.obtenerTodas();
 
         return all_conversions;

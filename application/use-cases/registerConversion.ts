@@ -1,5 +1,6 @@
 import { Moneda } from "../../src/domain/entities/moneda";
 import { Conversion } from "../../src/domain/entities/conversion";
+import { RegisterPort } from "../../src/domain/ports/primary/registerPort";
 
 // Dependencias
 
@@ -14,14 +15,14 @@ export interface ConversionRepository {
 
 // Caso de uso
 
-export class RegisterConversion {
+export class RegisterConversion implements RegisterPort {
 
     constructor (
         private exchangeRateService: ExchangeRateService,
         private conversionRepository: ConversionRepository
     ) {}
 
-    async ejecutar (
+    async register (
         id: string,
         monedaOrigen: Moneda,
         monedaDestino: Moneda,
