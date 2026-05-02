@@ -23,7 +23,6 @@ export class RegisterConversion implements RegisterPort {
     ) {}
 
     async register (
-        id: string,
         monedaOrigen: Moneda,
         monedaDestino: Moneda,
         montoOriginal: number,
@@ -31,10 +30,6 @@ export class RegisterConversion implements RegisterPort {
     ): Promise<Conversion> {
 
         // Validaciones
-
-        if (!id || id.trim() === "") {
-            throw new Error("Opa, id vacío");
-        }
 
         if (montoOriginal <= 0 ){
             throw new Error("El monto original no puede ser cero");
@@ -50,18 +45,11 @@ export class RegisterConversion implements RegisterPort {
             throw new Error("No se puede convertir a la misma moneda");
         }
 
-        const id_exists = await this.conversionRepository.buscarPorId(id)
-
-        if (id_exists) {
-            throw new Error(`Conversion con id ${id} previamente existente`);
-        }
-
         const tasa = await this.exchangeRateService.obtenerTasa(monedaOrigen, monedaDestino);
 
         const montoConvertido = montoOriginal * tasa;
 
         const conversion = new Conversion(
-            id, 
             monedaOrigen, 
             monedaDestino, 
             montoOriginal, 
