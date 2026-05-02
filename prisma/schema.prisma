@@ -23,7 +23,7 @@ model Moneda {
 }
 
 model Conversion {
-  id String @id
+  id String @id @default(cuid())
   montoOriginal Float
   montoConvertido Float
   tasa Float
