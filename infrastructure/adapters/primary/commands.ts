@@ -37,15 +37,15 @@ export async function handleRegisterConversion(allCommand:string[]) {
 
 }
 
-export function handleList(){
+export async function handleList(){
     console.log("Funcion list")
 }
 
-export function handleGet(instanceID:string) {
+export async function handleGet(instanceID:string) {
     console.log("Funcion get")
 }
 
-export function handleDelete(instanceID:string) {
+export async function handleDelete(instanceID:string) {
     console.log("Funcion delete")
 }
 
