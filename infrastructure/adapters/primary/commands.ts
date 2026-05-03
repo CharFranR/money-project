@@ -16,7 +16,7 @@ export const handleFunctions = {
     handleDeleteAll,
 }
 
-export function handleRegisterConversion(allCommand:string[]) {
+export async function handleRegisterConversion(allCommand:string[]) {
 
     const codeMonedaOrigen = allCommand[3];
     const codeMonedaDestino = allCommand[4];
@@ -29,7 +29,11 @@ export function handleRegisterConversion(allCommand:string[]) {
 
     const useCase = new RegisterConversion (exchangeRateService, conversionRepository, monedaRepository)
 
-    return useCase.register(codeMonedaOrigen, codeMonedaDestino, montoOriginal)
+    // return useCase.register(codeMonedaOrigen, codeMonedaDestino, montoOriginal)
+
+    const conversion = await useCase.register(codeMonedaOrigen, codeMonedaDestino, montoOriginal)
+
+    console.log(conversion)
 
 }
 
