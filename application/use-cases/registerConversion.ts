@@ -1,6 +1,7 @@
 import { Moneda } from "../../src/domain/entities/moneda";
 import { Conversion } from "../../src/domain/entities/conversion";
 import { RegisterPort } from "../../src/domain/ports/primary/registerPort";
+import { MonedaRepository } from "../../src/domain/ports/secondary/monedaRepository";
 
 // Dependencias
 
@@ -19,15 +20,34 @@ export class RegisterConversion implements RegisterPort {
 
     constructor (
         private exchangeRateService: ExchangeRateService,
-        private conversionRepository: ConversionRepository
+        private conversionRepository: ConversionRepository,
+        private monedaRepository: MonedaRepository
     ) {}
 
     async register (
-        monedaOrigen: Moneda,
-        monedaDestino: Moneda,
+        codeMonedaOrigen: string,
+        codeMonedaDestino: string,
         montoOriginal: number,
         fecha?: Date,
     ): Promise<Conversion> {
+
+        // Obetener mondaOrigen y monedaDestino a partir de los códigos
+
+        if (codeMonedaOrigen === codeMonedaDestino ){
+            throw new Error("No se puede convertir a la misma moneda");
+        }
+
+        if (!codeMonedaOrigen || !codeMonedaDestino){
+            throw new Error("Campo requerido");
+        }
+
+        const monedaOrigen = await this.monedaRepository.buscarPorCodigo(codeMonedaOrigen);
+        const monedaDestino = await this.monedaRepository.buscarPorCodigo(codeMonedaDestino);
+
+        if (!monedaOrigen || !monedaDestino){
+            throw new Error("Monedas no encontradas");
+        }
+
 
         // Validaciones
 
@@ -35,16 +55,7 @@ export class RegisterConversion implements RegisterPort {
             throw new Error("El monto original no puede ser cero");
         }  
 
-        if (!monedaOrigen || !monedaDestino){
-            throw new Error("Necesito las dos monedas para hacer la conversion");
-        }
-
-        // Reglas de negocio
-
-        if (monedaDestino.obtenerCodigo() === monedaOrigen.obtenerCodigo()){
-            throw new Error("No se puede convertir a la misma moneda");
-        }
-
+        
         const tasa = await this.exchangeRateService.obtenerTasa(monedaOrigen, monedaDestino);
 
         const montoConvertido = montoOriginal * tasa;
