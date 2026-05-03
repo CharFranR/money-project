@@ -18,9 +18,9 @@ export const handleFunctions = {
 
 export function handleRegisterConversion(allCommand:string[]) {
 
-    const codeMonedaOrigen = allCommand[2];
-    const codeMonedaDestino = allCommand[3];
-    const montoOriginal = parseFloat(allCommand[4]);
+    const codeMonedaOrigen = allCommand[3];
+    const codeMonedaDestino = allCommand[4];
+    const montoOriginal = parseFloat(allCommand[5]);
 
     const exchangeRateService = new ExchangeRate()
     const conversionRepository = new PrismaConversionRepository()
